@@ -16,3 +16,52 @@ models:
         description: "Le nombre total de trajets effectués pour ce type de véhicule et ce segment de client."
       - name: total_revenus
         description: "Le montant total des revenus générés par les trajets pour ce type de véhicule et ce segment de client."
+
+  - name: stg_clients
+    description: "Modèle de staging pour nettoyer les données clients."
+    columns:
+      - name: id_client
+        description: "Identifiant unique du client."
+        tests:
+          - not_null
+          - unique
+      - name: email_client
+        description: "Adresse e-mail du client."
+        tests:
+        - not_null
+  - name: stg_segments_clients
+    description: "Modèle de staging pour les segments clients."
+    columns:
+      - name: id_segment
+        description: "Identifiant du segment."
+        tests:
+          - not_null
+          - unique
+      - name: nom_segment
+        description: "Nom du segment client (Entreprise, VIP, etc.)."
+        tests:
+          - not_null
+  - name: stg_vehicules
+    description: "Modèle de staging pour nettoyer les données véhicules."
+    columns:
+      - name: id_vehicule
+        description: "Identifiant unique du véhicule."
+        tests:
+          - not_null
+          - unique
+      - name: immatriculation
+        description: "Numéro d'immatriculation du véhicule."
+        tests:
+          - not_null
+  - name: stg_types_vehicules
+    description: "Modèle de staging pour les types de véhicules."
+    columns:
+      - name: id_type_vehicule
+        description: "Identifiant du type de véhicule."
+        tests:
+          - not_null
+          - unique
+      - name: nom_type_vehicule
+        description: "Nom du type de véhicule (SUV, Berline, etc.)."
+        tests:
+          - not_null
