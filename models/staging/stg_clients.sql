@@ -1,5 +1,5 @@
   
-    SELECT
+SELECT
 id_client,
 nom_client,
 prenom_client,
