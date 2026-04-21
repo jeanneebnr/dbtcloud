@@ -65,3 +65,16 @@ models:
         description: "Nom du type de véhicule (SUV, Berline, etc.)."
         tests:
           - not_null
+
+
+  - name: revenus_par_segment_et_type
+    description: "Modèle qui calcule le nombre total de trajets et le montant total des revenus par segment de client et type de véhicule."
+    columns:
+      - name: nom_segment
+        description: "Le segment de client (Entreprise, VIP, Particulier)."
+      - name: nom_type_vehicule
+        description: "Le type de véhicule (SUV, Berline)."
+      - name: nombre_trajets
+        description: "Le nombre de trajets réalisés pour ce type de véhicule et ce segment."
+      - name: total_revenus
+        description: "Le montant total des revenus générés par ce type de véhicule et ce segment."
