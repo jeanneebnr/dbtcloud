@@ -78,3 +78,14 @@ models:
         description: "Le nombre de trajets réalisés pour ce type de véhicule et ce segment."
       - name: total_revenus
         description: "Le montant total des revenus générés par ce type de véhicule et ce segment."
+
+
+  - name: stg_faits_trajets
+    description: "Modèle de staging reliant les trajets et la dimension dates."
+    tests:
+      - freshness_by_max_date:
+          threshold_days: 2
+          severity: warn
+      - freshness_by_max_date:
+          threshold_days: 3
+          severity: error
