@@ -1,7 +1,4 @@
-{{
-    config(materialized='table')
-}}
-    
+  
     SELECT
 id_client,
 nom_client,

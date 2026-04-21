@@ -1,6 +1,3 @@
-{{
-    config(materialized='table')
-}}
 
 SELECT
 id_type_vehicule,
