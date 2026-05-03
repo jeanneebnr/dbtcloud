@@ -1,3 +1,7 @@
+{{
+    config(materialized = 'table')
+    }}
+
 SELECT 
     row_number() over() as id,
     offset,
