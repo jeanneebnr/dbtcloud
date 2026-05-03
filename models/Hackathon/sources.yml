@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: hackathon_openweather
+    database: n8n-lacapsule-493508
+    schema: hackathon_openweather
+    tables:
+      - name: raw_weather
+      - name: raw_forecast

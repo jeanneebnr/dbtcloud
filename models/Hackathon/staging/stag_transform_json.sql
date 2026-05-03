@@ -1,0 +1,25 @@
+SELECT
+  JSON_VALUE(raw_data, '$.name') AS ville,
+  JSON_VALUE(raw_data, '$.sys.country') AS pays,
+  CAST(JSON_VALUE(raw_data, '$.coord.lon') AS FLOAT64) AS longitude,
+  CAST(JSON_VALUE(raw_data, '$.coord.lat') AS FLOAT64) AS latitude,
+  CAST(JSON_VALUE(raw_data, '$.main.temp') AS FLOAT64) AS temperature,
+  CAST(JSON_VALUE(raw_data, '$.main.temp_min') AS FLOAT64) AS temp_min,
+  CAST(JSON_VALUE(raw_data, '$.main.temp_max') AS FLOAT64) AS temp_max,
+  CAST(JSON_VALUE(raw_data, '$.main.feels_like') AS FLOAT64) AS feels_like,
+  CAST(JSON_VALUE(raw_data, '$.main.humidity') AS INT64) AS humidite,
+  CAST(JSON_VALUE(raw_data, '$.main.pressure') AS INT64) AS pression,
+  CAST(JSON_VALUE(raw_data, '$.main.sea_level') AS INT64) AS pression_mer,
+  CAST(JSON_VALUE(raw_data, '$.main.grnd_level') AS INT64) AS pression_sol,
+  CAST(JSON_VALUE(raw_data, '$.visibility') AS INT64) AS visibilite,
+  JSON_VALUE(raw_data, '$.weather[0].main') AS condition,
+  JSON_VALUE(raw_data, '$.weather[0].description') AS description,
+  CAST(JSON_VALUE(raw_data, '$.wind.speed') AS FLOAT64) AS vent_vitesse,
+  CAST(JSON_VALUE(raw_data, '$.wind.deg') AS INT64) AS vent_direction,
+  CAST(JSON_VALUE(raw_data, '$.clouds.all') AS INT64) AS nuages,
+  TIMESTAMP_SECONDS(CAST(JSON_VALUE(raw_data, '$.sys.sunrise') AS INT64)) AS lever_soleil,
+  TIMESTAMP_SECONDS(CAST(JSON_VALUE(raw_data, '$.sys.sunset') AS INT64)) AS coucher_soleil,
+  TIMESTAMP_SECONDS(CAST(JSON_VALUE(raw_data, '$.dt') AS INT64)) AS timestamp_mesure,
+  timestamp AS timestamp_insertion
+
+FROM {{ source('hackathon_openweather', 'raw_weather') }}
