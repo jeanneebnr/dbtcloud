@@ -1,3 +1,6 @@
+{{ config(materialized='table') }}
+
+
 WITH timestamps AS (
   SELECT DISTINCT PARSE_DATETIME('%Y-%m-%d %H:%M:%S', timestamp_mesure) AS ts
   FROM {{ ref('stg_weather') }}
