@@ -9,6 +9,7 @@ SELECT
   f.temperature,
   f.temp_min,
   f.temp_max,
+  f.amplitude_thermique,
   f.feels_like,
   f.humidite,
   f.pression,
@@ -16,6 +17,7 @@ SELECT
   f.pression_sol,
   f.vent_vitesse,
   f.vent_direction,
+  f.vent_direction_cardinale,
   f.nuages,
   f.visibilite
 
