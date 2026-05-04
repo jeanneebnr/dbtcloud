@@ -33,10 +33,11 @@ WITH transform AS (
     FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', DATETIME(TIMESTAMP_SECONDS(CAST(JSON_VALUE(raw_data, '$.sys.sunset') AS INT64) + CAST(JSON_VALUE(raw_data, '$.timezone') AS INT64)))) AS coucher_soleil,
     FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', DATETIME(TIMESTAMP_SECONDS(CAST(JSON_VALUE(raw_data, '$.dt') AS INT64) + CAST(JSON_VALUE(raw_data, '$.timezone') AS INT64)))) AS timestamp_mesure,
     FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', DATETIME(TIMESTAMP_SECONDS(UNIX_SECONDS(timestamp) + CAST(JSON_VALUE(raw_data, '$.timezone') AS INT64)))) AS timestamp_insertion
-
+    
   FROM {{ source('hackathon_openweather', 'raw_weather') }}
   WHERE raw_data IS NOT NULL
 ),
+
 
 clean AS (
   SELECT *,
