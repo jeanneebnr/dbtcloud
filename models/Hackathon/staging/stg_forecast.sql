@@ -22,14 +22,14 @@ WITH transform AS (
     CAST(JSON_VALUE(item, '$.wind.speed') AS FLOAT64) AS vent_vitesse,
     CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) AS vent_direction,
     CASE
-        WHEN vent_direction >= 337.5 OR vent_direction < 22.5 THEN 'Nord'
-        WHEN vent_direction >= 22.5 AND vent_direction < 67.5 THEN 'Nord-Est'
-        WHEN vent_direction >= 67.5 AND vent_direction < 112.5 THEN 'Est'
-        WHEN vent_direction >= 112.5 AND vent_direction < 157.5 THEN 'Sud-Est'
-        WHEN vent_direction >= 157.5 AND vent_direction < 202.5 THEN 'Sud'
-        WHEN vent_direction >= 202.5 AND vent_direction < 247.5 THEN 'Sud-Ouest'
-        WHEN vent_direction >= 247.5 AND vent_direction < 292.5 THEN 'Ouest'
-        WHEN vent_direction >= 292.5 AND vent_direction < 337.5 THEN 'Nord-Ouest'
+        WHEN CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) >= 337.5 OR CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) < 22.5 THEN 'Nord'
+        WHEN CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) >= 22.5 AND CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) < 67.5 THEN 'Nord-Est'
+        WHEN CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) >= 67.5 AND CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) < 112.5 THEN 'Est'
+        WHEN CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) >= 112.5 AND CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) < 157.5 THEN 'Sud-Est'
+        WHEN CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) >= 157.5 AND CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) < 202.5 THEN 'Sud'
+        WHEN CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) >= 202.5 AND CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) < 247.5 THEN 'Sud-Ouest'
+        WHEN CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) >= 247.5 AND CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) < 292.5 THEN 'Ouest'
+        WHEN CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) >= 292.5 AND CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) < 337.5 THEN 'Nord-Ouest'
     END AS vent_direction_cardinale,
     CAST(JSON_VALUE(item, '$.wind.gust') AS FLOAT64) AS vent_rafale,
     CAST(JSON_VALUE(item, '$.clouds.all') AS INT64) AS nuages,
