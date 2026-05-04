@@ -1,18 +1,16 @@
 {{ config(materialized='table') }}
 
-
 WITH timestamps AS (
   SELECT DISTINCT PARSE_DATETIME('%Y-%m-%d %H:%M:%S', timestamp_mesure) AS ts
   FROM {{ ref('stg_weather') }}
-  
   UNION DISTINCT
-  
   SELECT DISTINCT PARSE_DATETIME('%Y-%m-%d %H:%M:%S', timestamp_prevision) AS ts
   FROM {{ ref('stg_forecast') }}
 )
 
 SELECT
-  ts AS timestamp,
+  ROW_NUMBER() OVER (ORDER BY ts) AS temps_id,
+  FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', ts) AS timestamp,
   DATE(ts) AS date,
   TIME(ts) AS heure,
   EXTRACT(YEAR FROM ts) AS annee,
@@ -30,6 +28,5 @@ SELECT
     WHEN 6 THEN 'Vendredi'
     WHEN 7 THEN 'Samedi'
   END AS nom_jour
-
 FROM timestamps
 ORDER BY ts
