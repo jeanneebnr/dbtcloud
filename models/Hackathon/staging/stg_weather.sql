@@ -1,4 +1,4 @@
-WITH base AS (
+WITH transform AS (
   SELECT
     JSON_VALUE(raw_data, '$.name') AS ville,
     JSON_VALUE(raw_data, '$.sys.country') AS pays,
@@ -22,12 +22,17 @@ WITH base AS (
     FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', DATETIME(TIMESTAMP_SECONDS(CAST(JSON_VALUE(raw_data, '$.sys.sunset') AS INT64) + CAST(JSON_VALUE(raw_data, '$.timezone') AS INT64)))) AS coucher_soleil,
     FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', DATETIME(TIMESTAMP_SECONDS(CAST(JSON_VALUE(raw_data, '$.dt') AS INT64) + CAST(JSON_VALUE(raw_data, '$.timezone') AS INT64)))) AS timestamp_mesure,
     FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', DATETIME(TIMESTAMP_SECONDS(UNIX_SECONDS(timestamp) + CAST(JSON_VALUE(raw_data, '$.timezone') AS INT64)))) AS timestamp_insertion
+
   FROM {{ source('hackathon_openweather', 'raw_weather') }}
   WHERE raw_data IS NOT NULL
+),
+
+clean AS (
+  SELECT DISTINCT *
+  FROM transform
+  WHERE ville IS NOT NULL
+    AND temperature IS NOT NULL
+    AND timestamp_mesure IS NOT NULL
 )
 
-SELECT DISTINCT *
-FROM base
-WHERE ville IS NOT NULL
-  AND temperature IS NOT NULL
-  AND timestamp_mesure IS NOT NULL
+SELECT * FROM clean

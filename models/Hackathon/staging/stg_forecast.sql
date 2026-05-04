@@ -1,6 +1,5 @@
-WITH base AS (
+WITH transform AS (
   SELECT
-
     JSON_VALUE(raw_data, '$.city.name') AS ville,
     JSON_VALUE(raw_data, '$.city.country') AS pays,
     CAST(JSON_VALUE(raw_data, '$.city.coord.lon') AS FLOAT64) AS longitude,
@@ -30,10 +29,14 @@ WITH base AS (
   FROM {{ source('hackathon_openweather', 'raw_forecast') }},
   UNNEST(JSON_QUERY_ARRAY(raw_data, '$.list')) AS item
   WHERE raw_data IS NOT NULL
+),
+
+clean AS (
+  SELECT DISTINCT *
+  FROM transform
+  WHERE ville IS NOT NULL
+    AND temperature IS NOT NULL
+    AND timestamp_prevision IS NOT NULL
 )
 
-SELECT DISTINCT *
-FROM base
-WHERE ville IS NOT NULL
-  AND temperature IS NOT NULL
-  AND timestamp_prevision IS NOT NULL
+SELECT * FROM clean
