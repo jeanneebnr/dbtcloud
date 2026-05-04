@@ -3,9 +3,11 @@
 SELECT
   f.timestamp_mesure,
   f.timestamp_insertion,
+
   v.ville_id,
   c.condition_id,
   t.temps_id,
+
   f.temperature,
   f.temp_min,
   f.temp_max,
@@ -24,11 +26,10 @@ SELECT
 FROM {{ ref('stg_weather') }} f
 
 LEFT JOIN {{ ref('dim_ville') }} v
-  ON f.ville = v.ville
+  ON f.ville = v.ville AND f.pays = v.pays
 
 LEFT JOIN {{ ref('dim_condition') }} c
   ON f.condition = c.condition
-  AND f.description = c.description
 
 LEFT JOIN {{ ref('dim_temps') }} t
   ON f.timestamp_mesure = t.timestamp

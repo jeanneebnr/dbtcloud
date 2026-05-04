@@ -5,41 +5,79 @@ WITH transform AS (
 
     CAST(JSON_VALUE(raw_data, '$.city.coord.lon') AS FLOAT64) AS longitude,
     CAST(JSON_VALUE(raw_data, '$.city.coord.lat') AS FLOAT64) AS latitude,
+    CAST(JSON_VALUE(raw_data, '$.city.timezone') AS INT64) AS timezone,
+
+    FORMAT_DATETIME('%Y-%m-%d %H:%M:%S',
+      DATETIME(TIMESTAMP_SECONDS(
+        CAST(JSON_VALUE(raw_data, '$.city.sunrise') AS INT64)
+        + CAST(JSON_VALUE(raw_data, '$.city.timezone') AS INT64)
+      ))
+    ) AS lever_soleil,
+
+    FORMAT_DATETIME('%Y-%m-%d %H:%M:%S',
+      DATETIME(TIMESTAMP_SECONDS(
+        CAST(JSON_VALUE(raw_data, '$.city.sunset') AS INT64)
+        + CAST(JSON_VALUE(raw_data, '$.city.timezone') AS INT64)
+      ))
+    ) AS coucher_soleil,
 
     CAST(JSON_VALUE(item, '$.main.temp') AS FLOAT64) AS temperature,
     CAST(JSON_VALUE(item, '$.main.temp_min') AS FLOAT64) AS temp_min,
     CAST(JSON_VALUE(item, '$.main.temp_max') AS FLOAT64) AS temp_max,
 
+    ROUND(
+      CAST(JSON_VALUE(item, '$.main.temp_max') AS FLOAT64)
+      - CAST(JSON_VALUE(item, '$.main.temp_min') AS FLOAT64),
+      2
+    ) AS amplitude_thermique,
+
     CAST(JSON_VALUE(item, '$.main.feels_like') AS FLOAT64) AS feels_like,
     CAST(JSON_VALUE(item, '$.main.humidity') AS INT64) AS humidite,
     CAST(JSON_VALUE(item, '$.main.pressure') AS INT64) AS pression,
-
+    CAST(JSON_VALUE(item, '$.main.sea_level') AS INT64) AS pression_mer,
+    CAST(JSON_VALUE(item, '$.main.grnd_level') AS INT64) AS pression_sol,
     CAST(JSON_VALUE(item, '$.visibility') AS INT64) AS visibilite,
+
     JSON_VALUE(item, '$.weather[0].main') AS condition,
+    JSON_VALUE(item, '$.weather[0].description') AS description,
 
     CAST(JSON_VALUE(item, '$.wind.speed') AS FLOAT64) AS vent_vitesse,
     CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) AS vent_direction,
-    CAST(JSON_VALUE(item, '$.wind.gust') AS FLOAT64) AS vent_rafale,
 
+    CASE
+      WHEN CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) >= 337.5 OR CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) < 22.5 THEN 'Nord'
+      WHEN CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) >= 22.5 AND CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) < 67.5 THEN 'Nord-Est'
+      WHEN CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) >= 67.5 AND CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) < 112.5 THEN 'Est'
+      WHEN CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) >= 112.5 AND CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) < 157.5 THEN 'Sud-Est'
+      WHEN CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) >= 157.5 AND CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) < 202.5 THEN 'Sud'
+      WHEN CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) >= 202.5 AND CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) < 247.5 THEN 'Sud-Ouest'
+      WHEN CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) >= 247.5 AND CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) < 292.5 THEN 'Ouest'
+      WHEN CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) >= 292.5 AND CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) < 337.5 THEN 'Nord-Ouest'
+    END AS vent_direction_cardinale,
+
+    CAST(JSON_VALUE(item, '$.wind.gust') AS FLOAT64) AS vent_rafale,
     CAST(JSON_VALUE(item, '$.clouds.all') AS INT64) AS nuages,
     CAST(JSON_VALUE(item, '$.pop') AS FLOAT64) AS probabilite_pluie,
 
-    TIMESTAMP_SECONDS(CAST(JSON_VALUE(item, '$.dt') AS INT64)) AS timestamp_prevision
+    TIMESTAMP_SECONDS(CAST(JSON_VALUE(item, '$.dt') AS INT64)) AS timestamp_prevision,
+
+    CURRENT_TIMESTAMP() AS timestamp_insertion
 
   FROM {{ source('hackathon_openweather', 'raw_forecast') }},
   UNNEST(JSON_QUERY_ARRAY(raw_data, '$.list')) AS item
   WHERE raw_data IS NOT NULL
-)
+),
 
-, enriched AS (
-  SELECT *,(
-    CASE
+enriched AS (
+  SELECT *,
+    (
+      CASE
         WHEN temperature BETWEEN 15 AND 25 THEN 25
         WHEN temperature BETWEEN 10 AND 30 THEN 18
         ELSE 10
-    END
+      END
       +
-    CASE
+      CASE
         WHEN condition = 'Rain' THEN 0
         WHEN probabilite_pluie > 0.6 THEN 5
         WHEN probabilite_pluie > 0.3 THEN 10
@@ -66,9 +104,9 @@ WITH transform AS (
     ) AS indice_mobilite
 
   FROM transform
-)
+),
 
-, clean AS (
+clean AS (
   SELECT *,
     ROW_NUMBER() OVER (
       PARTITION BY ville,
