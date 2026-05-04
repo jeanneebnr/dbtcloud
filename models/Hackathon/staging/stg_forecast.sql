@@ -31,11 +31,14 @@ WITH transform AS (
   WHERE raw_data IS NOT NULL
 ),
 
+
 clean AS (
   SELECT *,
     ROW_NUMBER() OVER (
-      PARTITION BY ville, EXTRACT(HOUR FROM PARSE_DATETIME('%Y-%m-%d %H:%M:%S', timestamp_prevision))
-      ORDER BY timestamp_insertion DESC
+    PARTITION BY ville, 
+        DATE(PARSE_DATETIME('%Y-%m-%d %H:%M:%S', timestamp_prevision)),
+        EXTRACT(HOUR FROM PARSE_DATETIME('%Y-%m-%d %H:%M:%S', timestamp_prevision))
+    ORDER BY timestamp_insertion DESC
     ) AS rn
   FROM transform
   WHERE ville IS NOT NULL
