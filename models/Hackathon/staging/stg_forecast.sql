@@ -10,6 +10,7 @@ WITH transform AS (
     CAST(JSON_VALUE(item, '$.main.temp') AS FLOAT64) AS temperature,
     CAST(JSON_VALUE(item, '$.main.temp_min') AS FLOAT64) AS temp_min,
     CAST(JSON_VALUE(item, '$.main.temp_max') AS FLOAT64) AS temp_max,
+    ROUND(CAST(JSON_VALUE(item, '$.main.temp_max') AS FLOAT64) - CAST(JSON_VALUE(item, '$.main.temp_min') AS FLOAT64), 2) AS amplitude_thermique,
     CAST(JSON_VALUE(item, '$.main.feels_like') AS FLOAT64) AS feels_like,
     CAST(JSON_VALUE(item, '$.main.humidity') AS INT64) AS humidite,
     CAST(JSON_VALUE(item, '$.main.pressure') AS INT64) AS pression,
@@ -20,6 +21,16 @@ WITH transform AS (
     JSON_VALUE(item, '$.weather[0].description') AS description,
     CAST(JSON_VALUE(item, '$.wind.speed') AS FLOAT64) AS vent_vitesse,
     CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) AS vent_direction,
+    CASE
+        WHEN vent_direction >= 337.5 OR vent_direction < 22.5 THEN 'Nord'
+        WHEN vent_direction >= 22.5 AND vent_direction < 67.5 THEN 'Nord-Est'
+        WHEN vent_direction >= 67.5 AND vent_direction < 112.5 THEN 'Est'
+        WHEN vent_direction >= 112.5 AND vent_direction < 157.5 THEN 'Sud-Est'
+        WHEN vent_direction >= 157.5 AND vent_direction < 202.5 THEN 'Sud'
+        WHEN vent_direction >= 202.5 AND vent_direction < 247.5 THEN 'Sud-Ouest'
+        WHEN vent_direction >= 247.5 AND vent_direction < 292.5 THEN 'Ouest'
+        WHEN vent_direction >= 292.5 AND vent_direction < 337.5 THEN 'Nord-Ouest'
+    END AS vent_direction_cardinale,
     CAST(JSON_VALUE(item, '$.wind.gust') AS FLOAT64) AS vent_rafale,
     CAST(JSON_VALUE(item, '$.clouds.all') AS INT64) AS nuages,
     CAST(JSON_VALUE(item, '$.pop') AS FLOAT64) AS probabilite_pluie,
