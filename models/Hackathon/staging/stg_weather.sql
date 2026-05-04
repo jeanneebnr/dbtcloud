@@ -28,11 +28,17 @@ WITH transform AS (
 ),
 
 clean AS (
-  SELECT DISTINCT *
+  SELECT *,
+    ROW_NUMBER() OVER (
+      PARTITION BY ville, EXTRACT(HOUR FROM PARSE_DATETIME('%Y-%m-%d %H:%M:%S', timestamp_mesure))
+      ORDER BY timestamp_insertion DESC
+    ) AS rn
   FROM transform
   WHERE ville IS NOT NULL
     AND temperature IS NOT NULL
     AND timestamp_mesure IS NOT NULL
 )
 
-SELECT * FROM clean
+SELECT * EXCEPT(rn)
+FROM clean
+WHERE rn = 1
