@@ -24,6 +24,7 @@ SELECT
   f.vent_rafale,
   f.nuages,
   f.visibilite,
+  f.visibilite_km,
   f.probabilite_pluie,
   f.indice_mobilite,
   f.categorie_mobilite

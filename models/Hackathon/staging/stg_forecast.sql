@@ -37,6 +37,7 @@ WITH transform AS (
     CAST(JSON_VALUE(item, '$.main.sea_level') AS INT64) AS pression_mer,
     CAST(JSON_VALUE(item, '$.main.grnd_level') AS INT64) AS pression_sol,
     CAST(JSON_VALUE(item, '$.visibility') AS INT64) AS visibilite,
+    ROUND(CAST(JSON_VALUE(item, '$.visibility') AS INT64) / 1000.0, 2) AS visibilite_km,
 
     JSON_VALUE(item, '$.weather[0].main') AS condition,
     JSON_VALUE(item, '$.weather[0].description') AS description,

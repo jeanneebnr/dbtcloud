@@ -22,7 +22,8 @@ SELECT
   f.vent_direction,
   f.vent_direction_cardinale,
   f.nuages,
-  f.visibilite
+  f.visibilite,
+  f.visibilite_km
 
 FROM {{ ref('stg_weather') }} f
 
