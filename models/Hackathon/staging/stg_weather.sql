@@ -58,10 +58,14 @@ WITH transform AS (
       ))
     ) AS coucher_soleil,
 
-    TIMESTAMP_SECONDS(
-      CAST(JSON_VALUE(raw_data, '$.dt') AS INT64)
-      + CAST(JSON_VALUE(raw_data, '$.timezone') AS INT64)
+    TIMESTAMP_TRUNC(
+        TIMESTAMP_SECONDS(
+            CAST(JSON_VALUE(raw_data, '$.dt') AS INT64)
+            + CAST(JSON_VALUE(raw_data, '$.timezone') AS INT64)
+        ) + INTERVAL 30 MINUTE,
+        HOUR
     ) AS timestamp_mesure,
+
 
     CURRENT_TIMESTAMP() AS timestamp_insertion
 
