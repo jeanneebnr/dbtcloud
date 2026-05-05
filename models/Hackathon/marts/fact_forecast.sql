@@ -18,6 +18,7 @@ SELECT
   f.pression_mer,
   f.pression_sol,
   f.vent_vitesse,
+  f.vent_vitesse_kmh,
   f.vent_direction,
   f.vent_direction_cardinale,
   f.vent_rafale,
@@ -34,6 +35,7 @@ LEFT JOIN {{ ref('dim_ville') }} v
 
 LEFT JOIN {{ ref('dim_condition') }} c
   ON f.condition = c.condition
+  AND f.description = c.description
 
 LEFT JOIN {{ ref('dim_temps') }} t
   ON f.timestamp_prevision = t.timestamp
