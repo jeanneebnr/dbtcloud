@@ -32,6 +32,7 @@ SELECT
   f.score_vent,
   f.score_visibilite,
   f.score_nuages,
+  f.score_periode,
   f.categorie_mobilite
 
 FROM {{ ref('stg_forecast') }} f
