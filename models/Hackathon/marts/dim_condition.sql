@@ -6,8 +6,8 @@ WITH all_conditions AS (
 
   UNION DISTINCT
 
-  SELECT DISTINCT condition, CAST(NULL AS STRING) AS description
-  FROM {{ ref('stg_forecast') }}
+  SELECT DISTINCT condition, description
+FROM {{ ref('stg_forecast') }}
 )
 
 SELECT

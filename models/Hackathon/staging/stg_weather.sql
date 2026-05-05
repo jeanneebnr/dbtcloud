@@ -27,6 +27,7 @@ WITH transform AS (
     JSON_VALUE(raw_data, '$.weather[0].description') AS description,
 
     CAST(JSON_VALUE(raw_data, '$.wind.speed') AS FLOAT64) AS vent_vitesse,
+    ROUND(CAST(JSON_VALUE(raw_data, '$.wind.speed') AS FLOAT64) * 3.6, 2) AS vent_vitesse_kmh,
     CAST(JSON_VALUE(raw_data, '$.wind.deg') AS INT64) AS vent_direction,
 
     CASE

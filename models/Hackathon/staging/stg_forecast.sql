@@ -42,6 +42,7 @@ WITH transform AS (
     JSON_VALUE(item, '$.weather[0].description') AS description,
 
     CAST(JSON_VALUE(item, '$.wind.speed') AS FLOAT64) AS vent_vitesse,
+    ROUND(CAST(JSON_VALUE(item, '$.wind.speed') AS FLOAT64) * 3.6, 2) AS vent_vitesse_kmh,
     CAST(JSON_VALUE(item, '$.wind.deg') AS INT64) AS vent_direction,
 
     CASE
@@ -120,9 +121,7 @@ final_enriched AS (
 clean AS (
   SELECT *,
     ROW_NUMBER() OVER (
-      PARTITION BY ville,
-      DATE(timestamp_prevision),
-      EXTRACT(HOUR FROM timestamp_prevision)
+      PARTITION BY ville, timestamp_prevision
       ORDER BY timestamp_prevision DESC
     ) AS rn
   FROM final_enriched
