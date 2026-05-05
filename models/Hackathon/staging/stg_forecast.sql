@@ -72,40 +72,52 @@ WITH transform AS (
 
 enriched AS (
   SELECT *,
-    (
-      CASE
-        WHEN temperature BETWEEN 15 AND 25 THEN 25
-        WHEN temperature BETWEEN 10 AND 30 THEN 18
-        ELSE 10
-      END
-      +
-      CASE
-        WHEN condition = 'Rain' THEN 0
-        WHEN probabilite_pluie > 0.6 THEN 5
-        WHEN probabilite_pluie > 0.3 THEN 10
-        ELSE 20
-      END
-      +
-      CASE
-        WHEN vent_vitesse > 10 THEN 5
-        WHEN vent_vitesse > 5 THEN 10
-        ELSE 20
-      END
-      +
-      CASE
-        WHEN visibilite < 2000 THEN 5
-        WHEN visibilite < 5000 THEN 10
-        ELSE 20
-      END
-      +
-      CASE
-        WHEN nuages > 80 THEN 10
-        WHEN nuages > 50 THEN 15
-        ELSE 20
-      END
-    ) AS indice_mobilite
+CASE
+  WHEN EXTRACT(HOUR FROM timestamp_prevision) BETWEEN 0 AND 5 THEN 0
+  WHEN EXTRACT(HOUR FROM timestamp_prevision) BETWEEN 6 AND 8 THEN 20
+  WHEN EXTRACT(HOUR FROM timestamp_prevision) BETWEEN 9 AND 17 THEN 30
+  WHEN EXTRACT(HOUR FROM timestamp_prevision) BETWEEN 18 AND 21 THEN 20
+  WHEN EXTRACT(HOUR FROM timestamp_prevision) BETWEEN 22 AND 23 THEN 5
+END AS score_periode,
 
+CASE
+  WHEN temperature BETWEEN 15 AND 25 THEN 20
+  WHEN temperature BETWEEN 10 AND 30 THEN 14
+  ELSE 8
+END AS score_temperature,
+
+CASE
+  WHEN probabilite_pluie > 0.8 THEN 0
+  WHEN probabilite_pluie > 0.6 THEN 4
+  WHEN probabilite_pluie > 0.3 THEN 10
+  ELSE 20
+END AS score_pluie,
+
+CASE
+  WHEN vent_vitesse > 10 THEN 2
+  WHEN vent_vitesse > 5 THEN 6
+  ELSE 10
+END AS score_vent,
+
+CASE
+  WHEN nuages > 80 THEN 5
+  WHEN nuages > 50 THEN 7
+  ELSE 10
+END AS score_nuages,
+
+CASE
+  WHEN visibilite < 2000 THEN 2
+  WHEN visibilite < 5000 THEN 6
+  ELSE 10
+END AS score_visibilite,
+    
   FROM transform
+),
+
+indice AS (
+  SELECT *,
+    score_temperature + score_pluie + score_vent + score_visibilite + score_nuages AS indice_mobilite
+  FROM enriched
 ),
 
 final_enriched AS (
@@ -116,7 +128,7 @@ final_enriched AS (
       WHEN indice_mobilite >= 40 THEN 'Mobilité modérée'
       ELSE 'Mobilité faible'
     END AS categorie_mobilite
-  FROM enriched
+  FROM indice
 ),
 
 clean AS (
