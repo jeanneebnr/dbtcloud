@@ -27,6 +27,11 @@ SELECT
   f.visibilite_km,
   f.probabilite_pluie,
   f.indice_mobilite,
+  f.score_temperature,
+  f.score_pluie,
+  f.score_vent,
+  f.score_visibilite,
+  f.score_nuages,
   f.categorie_mobilite
 
 FROM {{ ref('stg_forecast') }} f

@@ -72,40 +72,44 @@ WITH transform AS (
 
 enriched AS (
   SELECT *,
-    (
-      CASE
+    CASE
         WHEN temperature BETWEEN 15 AND 25 THEN 25
         WHEN temperature BETWEEN 10 AND 30 THEN 18
         ELSE 10
-      END
-      +
-      CASE
+    END AS score_temperature,
+
+    CASE
         WHEN condition = 'Rain' THEN 0
         WHEN probabilite_pluie > 0.6 THEN 5
         WHEN probabilite_pluie > 0.3 THEN 10
         ELSE 20
-      END
-      +
-      CASE
+    END AS score_pluie,
+
+    CASE
         WHEN vent_vitesse > 10 THEN 5
         WHEN vent_vitesse > 5 THEN 10
         ELSE 20
-      END
-      +
-      CASE
+    END AS score_vent,
+
+    CASE
         WHEN visibilite < 2000 THEN 5
         WHEN visibilite < 5000 THEN 10
         ELSE 20
-      END
-      +
-      CASE
+    END AS score_visibilite,
+
+    CASE
         WHEN nuages > 80 THEN 10
         WHEN nuages > 50 THEN 15
         ELSE 20
-      END
-    ) AS indice_mobilite
-
+    END AS score_nuages
+    
   FROM transform
+),
+
+indice AS (
+  SELECT *,
+    score_temperature + score_pluie + score_vent + score_visibilite + score_nuages AS indice_mobilite
+  FROM enriched
 ),
 
 final_enriched AS (
@@ -116,7 +120,7 @@ final_enriched AS (
       WHEN indice_mobilite >= 40 THEN 'Mobilité modérée'
       ELSE 'Mobilité faible'
     END AS categorie_mobilite
-  FROM enriched
+  FROM indice
 ),
 
 clean AS (
