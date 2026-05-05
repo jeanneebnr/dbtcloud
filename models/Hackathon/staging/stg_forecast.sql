@@ -106,6 +106,17 @@ enriched AS (
   FROM transform
 ),
 
+final_enriched AS (
+  SELECT *,
+    CASE
+      WHEN indice_mobilite >= 80 THEN 'Très bonne mobilité'
+      WHEN indice_mobilite >= 60 THEN 'Bonne mobilité'
+      WHEN indice_mobilite >= 40 THEN 'Mobilité modérée'
+      ELSE 'Mobilité faible'
+    END AS categorie_mobilite
+  FROM enriched
+),
+
 clean AS (
   SELECT *,
     ROW_NUMBER() OVER (
@@ -114,7 +125,7 @@ clean AS (
       EXTRACT(HOUR FROM timestamp_prevision)
       ORDER BY timestamp_prevision DESC
     ) AS rn
-  FROM enriched
+  FROM final_enriched
   WHERE ville IS NOT NULL
     AND temperature IS NOT NULL
     AND timestamp_prevision IS NOT NULL

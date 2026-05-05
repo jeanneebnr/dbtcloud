@@ -24,7 +24,8 @@ SELECT
   f.nuages,
   f.visibilite,
   f.probabilite_pluie,
-  f.indice_mobilite
+  f.indice_mobilite,
+  f.categorie_mobilite
 
 FROM {{ ref('stg_forecast') }} f
 
