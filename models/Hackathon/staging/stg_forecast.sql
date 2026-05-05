@@ -72,36 +72,44 @@ WITH transform AS (
 
 enriched AS (
   SELECT *,
-    CASE
-        WHEN temperature BETWEEN 15 AND 25 THEN 25
-        WHEN temperature BETWEEN 10 AND 30 THEN 18
-        ELSE 10
-    END AS score_temperature,
+CASE
+  WHEN EXTRACT(HOUR FROM timestamp_prevision) BETWEEN 0 AND 5 THEN 0
+  WHEN EXTRACT(HOUR FROM timestamp_prevision) BETWEEN 6 AND 8 THEN 20
+  WHEN EXTRACT(HOUR FROM timestamp_prevision) BETWEEN 9 AND 17 THEN 30
+  WHEN EXTRACT(HOUR FROM timestamp_prevision) BETWEEN 18 AND 21 THEN 20
+  WHEN EXTRACT(HOUR FROM timestamp_prevision) BETWEEN 22 AND 23 THEN 5
+END AS score_periode,
 
-    CASE
-        WHEN condition = 'Rain' THEN 0
-        WHEN probabilite_pluie > 0.6 THEN 5
-        WHEN probabilite_pluie > 0.3 THEN 10
-        ELSE 20
-    END AS score_pluie,
+CASE
+  WHEN temperature BETWEEN 15 AND 25 THEN 20
+  WHEN temperature BETWEEN 10 AND 30 THEN 14
+  ELSE 8
+END AS score_temperature,
 
-    CASE
-        WHEN vent_vitesse > 10 THEN 5
-        WHEN vent_vitesse > 5 THEN 10
-        ELSE 20
-    END AS score_vent,
+CASE
+  WHEN condition = 'Rain' THEN 0
+  WHEN probabilite_pluie > 0.6 THEN 4
+  WHEN probabilite_pluie > 0.3 THEN 10
+  ELSE 20
+END AS score_pluie,
 
-    CASE
-        WHEN visibilite < 2000 THEN 5
-        WHEN visibilite < 5000 THEN 10
-        ELSE 20
-    END AS score_visibilite,
+CASE
+  WHEN vent_vitesse > 10 THEN 2
+  WHEN vent_vitesse > 5 THEN 6
+  ELSE 10
+END AS score_vent,
 
-    CASE
-        WHEN nuages > 80 THEN 10
-        WHEN nuages > 50 THEN 15
-        ELSE 20
-    END AS score_nuages
+CASE
+  WHEN nuages > 80 THEN 5
+  WHEN nuages > 50 THEN 7
+  ELSE 10
+END AS score_nuages,
+
+CASE
+  WHEN visibilite < 2000 THEN 2
+  WHEN visibilite < 5000 THEN 6
+  ELSE 10
+END AS score_visibilite,
     
   FROM transform
 ),
