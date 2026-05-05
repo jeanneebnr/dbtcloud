@@ -87,7 +87,7 @@ CASE
 END AS score_temperature,
 
 CASE
-  WHEN condition = 'Rain' THEN 0
+  WHEN probabilite_pluie > 0.8 THEN 0
   WHEN probabilite_pluie > 0.6 THEN 4
   WHEN probabilite_pluie > 0.3 THEN 10
   ELSE 20
