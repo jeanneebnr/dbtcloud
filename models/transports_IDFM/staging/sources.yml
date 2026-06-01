@@ -1,0 +1,43 @@
+version: 2
+
+sources:
+  - name: idfm
+    database: projet-final-496714
+    schema: raw_pre_traitees
+
+    tables:
+      - name: accessibilite_en_gare
+      - name: arrets_lignes
+      - name: horaires_2023
+      - name: horaires_2024
+      - name: indicateurs_de_perception_qs
+      - name: liste_transporteurs
+      - name: meteo_paris_2023_2024
+      - name: climatisation
+      - name: nb_fer_2023_s1
+      - name: nb_fer_2023_s2
+      - name: nb_fer_2024_s1
+      - name: nb_fer_2024_t3
+      - name: nb_surface_2023_t1
+      - name: nb_surface_2023_t2
+      - name: nb_surface_2023_t3
+      - name: nb_surface_2023_t4
+      - name: nb_surface_2024_t1
+      - name: nb_surface_2024_t2
+      - name: nb_surface_2024_t3
+      - name: profil_fer_2023_s1
+      - name: profil_fer_2023_s2
+      - name: profil_fer_2024_s1
+      - name: profil_fer_2024_t3
+      - name: profil_surface_2023_s1
+      - name: profil_surface_2023_s2
+      - name: profil_surface_2024_s1
+      - name: profil_surface_2024_t3
+      
+  - name: idfm
+    database: projet-final-496714
+    schema: stif_to_idfm
+
+    tables:
+      - name: referentiel_lignes
+      - name: referentiel_arrets 
