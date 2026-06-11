@@ -2,8 +2,8 @@ version: 2
 
 sources:
   - name: idfm
-    database: projet-final-496714
-    schema: raw_pre_traitees
+    database: projet-final-jeanne
+    schema: raw_transport
 
     tables:
       - name: accessibilite_en_gare
@@ -35,8 +35,8 @@ sources:
       - name: profil_surface_2024_t3
       
   - name: idfm
-    database: projet-final-496714
-    schema: stif_to_idfm
+    database: projet-final-jeanne
+    schema: tables_references
 
     tables:
       - name: referentiel_lignes
