@@ -23,4 +23,4 @@ SELECT
     CAST(is_extreme AS BOOL)                        AS is_extrem,
     CAST(weather_description AS STRING)             AS description_meteo
 
-FROM {{ source('idfm', 'meteo_paris_2023_2024') }}
+FROM stg_meteo_paris_2023_2024

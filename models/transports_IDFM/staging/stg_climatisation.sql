@@ -13,7 +13,7 @@ deduplicated AS (
                 PARTITION BY lineid
                 ORDER BY linename
             ) AS row_num
-        FROM source
+        FROM source_data
     )
     WHERE row_num = 1
 ),
@@ -21,7 +21,7 @@ deduplicated AS (
 clean_data AS (
     SELECT
         cast(lineid AS string) AS id_ligne_idfm,
-        replace(replace(split(cast(climatisation AS string), ':')[OFFSET(7)],'"',''), '}}','') AS climatisation
+        replace(replace(split(cast(extensions AS string), ':')[OFFSET(7)],'"',''), '}}','') AS climatisation
     FROM deduplicated
 )
 

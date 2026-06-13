@@ -27,18 +27,18 @@ FROM (
             ELSE TRIM(categorie_titre)
         END AS titre_normalise
     FROM (
-        SELECT TRIM(categorie_titre) AS categorie_titre FROM {{ source('idfm', 'nb_surface_2023_t1') }}
+        SELECT TRIM(categorie_titre) AS categorie_titre FROM stg_nb_surface_2023_t1
         UNION DISTINCT
-        SELECT TRIM(categorie_titre) FROM {{ source('idfm', 'nb_surface_2023_t2') }}
+        SELECT TRIM(categorie_titre) FROM stg_nb_surface_2023_t2
         UNION DISTINCT
-        SELECT TRIM(categorie_titre) FROM {{ source('idfm', 'nb_surface_2023_t3') }}
+        SELECT TRIM(categorie_titre) FROM stg_nb_surface_2023_t3
         UNION DISTINCT
-        SELECT TRIM(categorie_titre) FROM {{ source('idfm', 'nb_surface_2023_t4') }}
+        SELECT TRIM(categorie_titre) FROM stg_nb_surface_2023_t4
         UNION DISTINCT
-        SELECT TRIM(categorie_titre) FROM {{ source('idfm', 'nb_surface_2024_t1') }}
+        SELECT TRIM(categorie_titre) FROM stg_nb_surface_2024_t1
         UNION DISTINCT
-        SELECT TRIM(categorie_titre) FROM {{ source('idfm', 'nb_surface_2024_t2') }}
+        SELECT TRIM(categorie_titre) FROM stg_nb_surface_2024_t2
         UNION DISTINCT
-        SELECT TRIM(categorie_titre) FROM {{ source('idfm', 'nb_surface_2024_t3') }}
+        SELECT TRIM(categorie_titre) FROM stg_nb_surface_2024_t3
     )
 )
