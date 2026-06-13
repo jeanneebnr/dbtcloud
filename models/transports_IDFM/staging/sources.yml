@@ -1,7 +1,7 @@
 version: 2
 
 sources:
-  - name: idfm
+  - name: idfm_raw
     database: projet-final-jeanne
     schema: raw_transport
 
@@ -34,7 +34,7 @@ sources:
       - name: profil_surface_2024_s1
       - name: profil_surface_2024_t3
       
-  - name: idfm
+  - name: idfm_reference
     database: projet-final-jeanne
     schema: tables_references
 

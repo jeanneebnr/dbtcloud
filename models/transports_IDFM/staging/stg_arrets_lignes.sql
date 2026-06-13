@@ -1,6 +1,6 @@
 WITH source_data AS (
     SELECT * 
-    FROM {{ source('idfm', 'arrets_lignes') }}
+    FROM {{ source('idfm_raw', 'arrets_lignes') }}
 ),
 
 deduplicated AS (
