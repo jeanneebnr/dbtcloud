@@ -8,4 +8,4 @@ SELECT
     CAST(SPLIT(trnc_horr_60, 'H')[OFFSET(0)] AS STRING)                        AS heure,
     CAST(REPLACE(CAST(pourcentage_validations AS STRING), ',', '.') AS FLOAT64) AS validations_pct
 
-FROM {{ source('idfm', 'profil_surface_2024_t3') }}
+FROM {{ source('idfm_raw', 'profil_surface_2024_t3') }}

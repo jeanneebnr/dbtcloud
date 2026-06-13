@@ -1,14 +1,8 @@
 WITH source_data AS (
     SELECT *
-    FROM {{ source('idfm', 'climatisation') }}
+    FROM {{ source('idfm_raw', 'climatisation') }}
 ),
 
-filtered AS (
-    SELECT *
-    FROM source_data
-    WHERE climatisation != 'climatisation'
-      AND id_ligne_IDFM != 'id_ligne_IDFM'
-),
 
 deduplicated AS (
     SELECT *
@@ -16,19 +10,18 @@ deduplicated AS (
         SELECT
             *,
             row_number() OVER (
-                PARTITION BY id_ligne_IDFM
-                ORDER BY nom_ligne
+                PARTITION BY lineid
+                ORDER BY linename
             ) AS row_num
-        FROM filtered
+        FROM source
     )
     WHERE row_num = 1
 ),
 
 clean_data AS (
     SELECT
-        CAST(nom_ligne AS STRING) AS nom_ligne,
-        CAST(id_ligne_IDFM AS STRING) AS id_ligne_idfm,
-        CAST(climatisation AS STRING) AS climatisation
+        cast(lineid AS string) AS id_ligne_idfm,
+        replace(replace(split(cast(climatisation AS string), ':')[OFFSET(7)],'"',''), '}}','') AS climatisation
     FROM deduplicated
 )
 

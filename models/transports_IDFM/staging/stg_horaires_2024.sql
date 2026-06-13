@@ -21,4 +21,4 @@ SELECT
     neige,
     vent,
     meteo_defavorable
-FROM {{ source('idfm', 'horaires_2024') }}
+FROM {{ source('idfm_raw', 'horaires_2024') }}

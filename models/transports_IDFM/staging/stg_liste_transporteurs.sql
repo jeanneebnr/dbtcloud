@@ -13,6 +13,6 @@ SELECT
     contactperson,
     logo,
     email
-FROM {{ source('idfm', 'liste_transporteurs') }}
+FROM {{ source('idfm_raw', 'liste_transporteurs') }}
 
 

@@ -7,4 +7,4 @@ SELECT
     ligne            AS libelle_ligne,
     annee,
     resultat
-FROM {{ source('idfm', 'indicateurs_de_perception_qs') }}
+FROM {{ source('idfm_raw', 'indicateurs_de_perception_qs') }}

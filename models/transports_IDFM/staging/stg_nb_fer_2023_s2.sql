@@ -7,4 +7,4 @@ cast(libelle_arret as string) as libelle_arret,
 cast(id_zdc as string) as id_zone_arret,
 cast(categorie_titre as string) as categorie_titre,
 cast (nb_vald as int64) as validations_nb
-from {{source('idfm','nb_fer_2023_s2')}}
+from {{source('idfm_raw','nb_fer_2023_s2')}}

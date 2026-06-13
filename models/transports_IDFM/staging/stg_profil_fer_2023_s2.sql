@@ -1,6 +1,6 @@
 WITH source_data as (
     SELECT *
-    FROM {{source('idfm', 'profil_fer_2023_s2')}}
+    FROM {{source('idfm_raw', 'profil_fer_2023_s2')}}
 ),
 
 deduplicated as (

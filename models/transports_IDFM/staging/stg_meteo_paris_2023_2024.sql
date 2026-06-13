@@ -34,4 +34,4 @@ SELECT
 
     CAST(weather_description AS STRING) AS description_temp
 
-FROM {{ source('idfm', 'meteo_paris_2023_2024') }}
+FROM {{ source('idfm_raw', 'meteo_paris_2023_2024') }}

@@ -7,6 +7,6 @@ SELECT
     valid_fromdate,
     valid_todate
 
-FROM {{ source('idfm', 'referentiel_lignes') }}
+FROM {{ source('idfm_reference', 'referentiel_lignes') }}
 
 WHERE id_line IS NOT NULL

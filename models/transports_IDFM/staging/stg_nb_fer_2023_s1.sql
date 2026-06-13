@@ -7,7 +7,7 @@ SELECT
     cast(lda as string) as id_zone_arret,
     cast(categorie_titre as string) as categorie_titre,
     cast(nb_vald as int64) as validations_nb
-from {{ source('idfm', 'nb_fer_2023_s1') }}
+from {{ source('idfm_raw', 'nb_fer_2023_s1') }}
 
 
 
