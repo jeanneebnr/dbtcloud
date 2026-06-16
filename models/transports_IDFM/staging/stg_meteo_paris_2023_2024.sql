@@ -1,5 +1,5 @@
 SELECT
-    cast(time AS date) as date,
+    CAST(time AS date) as date,
 
     CAST(temperature_2m_mean AS FLOAT64) AS temperature_2m_mean,
     CAST(temperature_2m_max AS FLOAT64) AS temperature_2m_max,
