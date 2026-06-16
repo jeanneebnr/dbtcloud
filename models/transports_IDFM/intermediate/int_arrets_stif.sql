@@ -9,9 +9,7 @@ WITH all_facts AS (
         TRIM(id_zone_arret)                            AS id_zdc,
         libelle_arret
     FROM {{ ref('stg_profil_fer_2023_s1') }}
-
     UNION ALL
-
     SELECT
         SAFE_CAST(TRIM(id_transporteur_stif) AS INT64),
         SAFE_CAST(TRIM(id_reseau_stif) AS INT64),
@@ -19,9 +17,7 @@ WITH all_facts AS (
         TRIM(id_zone_arret),
         libelle_arret
     FROM {{ ref('stg_profil_fer_2023_s2') }}
-
     UNION ALL
-
     SELECT
         SAFE_CAST(TRIM(id_transporteur_stif) AS INT64),
         SAFE_CAST(TRIM(id_reseau_stif) AS INT64),
@@ -29,9 +25,7 @@ WITH all_facts AS (
         TRIM(id_zone_arret),
         libelle_arret
     FROM {{ ref('stg_profil_fer_2024_s1') }}
-
     UNION ALL
-
     SELECT
         SAFE_CAST(TRIM(id_transporteur_stif) AS INT64),
         SAFE_CAST(TRIM(id_reseau_stif) AS INT64),

@@ -59,6 +59,5 @@ SELECT
     END AS source_status
 
 FROM stif
-
 FULL OUTER JOIN idfm
     ON stif.id_zdc = idfm.id_zdc

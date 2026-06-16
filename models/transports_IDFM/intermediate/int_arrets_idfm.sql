@@ -28,7 +28,7 @@ accessibilite AS (
     SELECT
         id_stop_idfm AS id_arret_idfm,
         niveau_accessibilite,
-        note_accessibilite
+        nom_accessibilite
 
     FROM {{ ref('stg_accessibilite_en_gare') }}
 
@@ -51,10 +51,9 @@ SELECT
     al.reservation,
 
     acc.niveau_accessibilite,
-    acc.note_accessibilite
+    acc.nom_accessibilite
 
 FROM arrets_lignes al
-
 LEFT JOIN accessibilite acc
     ON al.id_arret_idfm = acc.id_arret_idfm
 

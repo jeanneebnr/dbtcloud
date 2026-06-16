@@ -21,6 +21,7 @@ deduplicated AS (
 clean_data AS (
     SELECT
         cast(lineid AS string) AS id_ligne_idfm,
+        cast(linename AS string) AS libelle_ligne,
         replace(replace(split(cast(extensions AS string), ':')[OFFSET(7)],'"',''), '}}','') AS climatisation
     FROM deduplicated
 )
