@@ -1,0 +1,513 @@
+version: 2
+
+models:
+
+  # ============================================================
+  # INTERMEDIAIRES
+  # ============================================================
+
+  - name: int_arrets_idfm
+    description: "Intermédiaire — Arrêts du réseau IDFM enrichis avec leur zone de correspondance et leurs informations d'accessibilité."
+    columns:
+      - name: id_arret_idfm
+        description: "Identifiant officiel IDFM de l'arrêt"
+        tests:
+          - not_null
+          - unique
+      - name: id_zdc
+        description: "Identifiant de la Zone De Correspondance"
+        tests:
+          - not_null
+      - name: libelle_arret
+        description: "Nom de l'arrêt"
+      - name: ville
+        description: "Ville de l'arrêt"
+      - name: code_postal
+        description: "Code postal de la ville"
+      - name: latitude
+        description: "Coordonnée géographique latitude"
+      - name: longitude
+        description: "Coordonnée géographique longitude"
+      - name: type_transport
+        description: "Mode de transport principal desservant l'arrêt"
+      - name: reservation
+        description: "Indique si une réservation est nécessaire"
+      - name: niveau_accessibilite
+        description: "Niveau d'accessibilité PMR de l'arrêt"
+      - name: note_accessibilite
+        description: "Note chiffrée d'accessibilité PMR"
+
+  - name: int_arrets_stif
+    description: "Intermédiaire — Arrêts du réseau STIF (ferré) avec leurs identifiants techniques et leur zone de correspondance."
+    columns:
+      - name: private_code_arret
+        description: "Code privé technique de l'arrêt"
+      - name: id_transporteur_stif
+        description: "Identifiant STIF du transporteur"
+        tests:
+          - not_null
+      - name: id_reseau_stif
+        description: "Identifiant STIF du réseau"
+        tests:
+          - not_null
+      - name: id_arret_stif
+        description: "Identifiant STIF de l'arrêt"
+        tests:
+          - not_null
+      - name: id_zdc
+        description: "Identifiant de la Zone De Correspondance"
+        tests:
+          - not_null
+      - name: libelle_arret
+        description: "Nom de l'arrêt"
+
+  - name: int_arrets_total
+    description: "Intermédiaire — Consolidation de tous les arrêts IDFM et STIF dans un référentiel unique. Permet de réconcilier les deux sources d'identifiants."
+    columns:
+      - name: id_zdc
+        description: "Identifiant de la Zone De Correspondance — clé de rapprochement entre IDFM et STIF"
+        tests:
+          - not_null
+      - name: zdc_origin
+        description: "Source de l'arrêt (IDFM, STIF ou les deux)"
+        tests:
+          - not_null
+      - name: private_code_arret
+        description: "Code privé technique de l'arrêt"
+      - name: libelle_arret_stif
+        description: "Nom de l'arrêt dans le référentiel STIF"
+      - name: libelle_arret_idfm
+        description: "Nom de l'arrêt dans le référentiel IDFM"
+      - name: source_status
+        description: "Statut de réconciliation : STIF_only, IDFM_only, ou matched"
+
+  - name: int_lignes_idfm
+    description: "Intermédiaire — Lignes du référentiel IDFM avec leur identifiant et libellé."
+    columns:
+      - name: id_ligne_idfm
+        description: "Identifiant officiel IDFM de la ligne"
+      - name: libelle_ligne
+        description: "Nom officiel de la ligne"
+
+  - name: int_lignes_stif
+    description: "Intermédiaire — Lignes du référentiel STIF avec leur code privé et identifiant."
+    columns:
+      - name: private_code
+        description: "Code privé technique de la ligne"
+        tests:
+          - not_null
+          - unique
+      - name: id_ligne_stif
+        description: "Identifiant STIF de la ligne"
+      - name: libelle_ligne
+        description: "Nom officiel de la ligne"
+
+  - name: int_lignes_total
+    description: "Intermédiaire — Consolidation de toutes les lignes IDFM et STIF. Permet de réconcilier les deux référentiels et d'identifier les lignes présentes dans une seule source."
+    columns:
+      - name: private_code
+        description: "Code privé technique — clé de rapprochement entre IDFM et STIF"
+      - name: id_ligne_idfm
+        description: "Identifiant officiel IDFM de la ligne"
+      - name: id_ligne_stif
+        description: "Identifiant STIF de la ligne"
+      - name: libelle_stif
+        description: "Nom de la ligne dans le référentiel STIF"
+      - name: libelle_idfm
+        description: "Nom de la ligne dans le référentiel IDFM"
+      - name: libelle_ligne
+        description: "Nom retenu après réconciliation des deux sources"
+      - name: source_status
+        description: "Statut de réconciliation : STIF_only, IDFM_only, ou matched"
+      - name: has_stif
+        description: "Booléen : la ligne est présente dans le référentiel STIF"
+      - name: has_idfm
+        description: "Booléen : la ligne est présente dans le référentiel IDFM"
+
+  # ============================================================
+  # DIMENSIONS
+  # ============================================================
+
+  - name: dim_arrets_lignes
+    description: "Dimension — Table de liaison entre les arrêts (ZDA) et les lignes. Permet de savoir quelles lignes desservent quel arrêt."
+    columns:
+      - name: id_arret_zda
+        description: "Identifiant de la Zone D'Arrêt (ZDA)"
+        tests:
+          - not_null
+      - name: id_arret_zdc
+        description: "Identifiant de la Zone De Correspondance (ZDC)"
+      - name: id_ligne
+        description: "Identifiant technique de la ligne — clé étrangère vers dim_lignes"
+        tests:
+          - not_null
+
+  - name: dim_arrets_zdc
+    description: "Dimension — Référentiel consolidé de tous les arrêts du réseau IDFM au niveau Zone De Correspondance (ZDC). Contient les informations géographiques et administratives."
+    columns:
+      - name: id_arret
+        description: "Identifiant unique de l'arrêt"
+        tests:
+          - not_null
+          - unique
+      - name: id_zdc
+        description: "Identifiant de la Zone De Correspondance"
+      - name: zdc_origin
+        description: "Source de l'arrêt dans le référentiel consolidé"
+      - name: private_code_arret
+        description: "Code privé technique de l'arrêt"
+      - name: libelle_arret
+        description: "Nom de l'arrêt"
+        tests:
+          - not_null
+      - name: ville
+        description: "Ville où se situe l'arrêt"
+      - name: code_postal
+        description: "Code postal de la ville"
+      - name: latitude
+        description: "Coordonnée géographique latitude"
+      - name: longitude
+        description: "Coordonnée géographique longitude"
+
+  - name: dim_categorie_titres
+    description: "Dimension — Référentiel des catégories de titres de transport validés sur le réseau IDFM (Navigo, Imagine R, Améthyste...). Générée depuis les données de validations."
+    columns:
+      - name: id_titre
+        description: "Identifiant technique unique de la catégorie de titre — généré par DBT"
+        tests:
+          - not_null
+          - unique
+      - name: titre
+        description: "Libellé de la catégorie de titre de transport"
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_date
+    description: "Dimension calendrier — Toutes les dates du réseau IDFM sur la période 2023-2024 enrichies avec leur catégorie de jour tarifaire IDFM (JOHV, DIJFP, SAHV, SAVS, JOVS)."
+    columns:
+      - name: date
+        description: "Date au format YYYY-MM-DD"
+        tests:
+          - not_null
+          - unique
+      - name: annee
+        description: "Année (2023 ou 2024)"
+        tests:
+          - not_null
+      - name: mois
+        description: "Numéro du mois (1-12)"
+        tests:
+          - not_null
+      - name: jour
+        description: "Numéro du jour dans le mois (1-31)"
+        tests:
+          - not_null
+      - name: jour_semaine
+        description: "Nom du jour de la semaine (Lundi, Mardi...)"
+      - name: categorie_jour
+        description: "Catégorie tarifaire IDFM du jour : JOHV (Jour Ouvré Hors Vacances), JOVS (Jour Ouvré Vacances Scolaires), SAHV (Samedi Hors Vacances), SAVS (Samedi Vacances Scolaires), DIJFP (Dimanche/Jour Férié/Pont)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['DIJFP', 'JOHV', 'JOVS', 'SAHV', 'SAVS']
+
+  - name: dim_lignes
+    description: "Dimension centrale des lignes de transport IDFM. Consolide les informations de toutes les sources : référentiel, horaires, climatisation, indicateurs de perception et transporteurs. Table principale pour les analyses par ligne dans Power BI."
+    columns:
+      - name: id_ligne
+        description: "Identifiant technique unique généré par DBT — clé primaire"
+        tests:
+          - not_null
+          - unique
+      - name: id_ligne_idfm
+        description: "Identifiant officiel IDFM de la ligne (ex: C00084)"
+      - name: id_ligne_stif
+        description: "Identifiant STIF de la ligne (réseau ferré)"
+      - name: private_code
+        description: "Code privé technique de la ligne"
+      - name: libelle_ligne
+        description: "Nom commercial de la ligne (ex: 13, RER B, T4)"
+      - name: dsp
+        description: "Code de la Délégation de Service Public (contrat d'exploitation)"
+      - name: type_transport
+        description: "Mode de transport normalisé : Bus, Metro, RapidTransit, LocalTrain, Tramway, Tram-train, RailShuttle, Funicular"
+      - name: surface_or_fer
+        description: "Classification exploitation : fer (métro, RER, train, tram-train) ou surface (bus, tramway)"
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['fer', 'surface', 'non classifié']
+      - name: climatisation
+        description: "Statut de climatisation des véhicules de la ligne"
+      - name: indicateur_perception
+        description: "Score de satisfaction des voyageurs — individuel si disponible, sinon hérité de la DSP"
+      - name: indicateur_perception_individuel
+        description: "Score de satisfaction propre à la ligne (peut être NULL si non mesuré individuellement)"
+      - name: indicateur_perception_dsp
+        description: "Score de satisfaction agrégé au niveau de la DSP"
+      - name: libelle_transporteur_arrets
+        description: "Nom du transporteur issu du référentiel des arrêts"
+      - name: libelle_transporteur_indicateurs
+        description: "Nom du transporteur issu des indicateurs de perception"
+      - name: libelle_transporteur
+        description: "Nom du transporteur retenu après réconciliation des sources"
+      - name: id_operateur
+        description: "Identifiant de l'opérateur — clé étrangère vers dim_liste_transporteurs"
+
+  - name: dim_liste_transporteurs
+    description: "Dimension — Référentiel complet des opérateurs de transport du réseau IDFM avec leurs coordonnées administratives et de contact."
+    columns:
+      - name: id_operateur
+        description: "Identifiant technique unique de l'opérateur — clé primaire générée par DBT"
+        tests:
+          - not_null
+          - unique
+      - name: libelle_transporteur
+        description: "Nom commercial de l'opérateur de transport"
+        tests:
+          - not_null
+      - name: transporteur_ref
+        description: "Référence officielle de l'opérateur"
+        tests:
+          - not_null
+      - name: num_rue
+        description: "Numéro de rue du siège social"
+      - name: rue
+        description: "Nom de la rue du siège social"
+      - name: adresse_ligne_1
+        description: "Complément d'adresse du siège social"
+      - name: ville
+        description: "Ville du siège social"
+      - name: code_postal
+        description: "Code postal du siège social"
+      - name: code_postal_extension
+        description: "Extension du code postal"
+      - name: tel
+        description: "Numéro de téléphone de contact"
+      - name: url
+        description: "Site web de l'opérateur"
+      - name: detail
+        description: "Informations complémentaires sur l'opérateur"
+      - name: contact
+        description: "Nom de la personne de contact"
+      - name: logo
+        description: "URL du logo de l'opérateur"
+      - name: email
+        description: "Adresse email de contact"
+
+  # ============================================================
+  # FACTS
+  # ============================================================
+
+  - name: fact_accessibilite_en_gare
+    description: "Fact — Données d'accessibilité PMR par arrêt. Permet d'analyser la couverture d'accessibilité du réseau IDFM."
+    columns:
+      - name: id_stop_zda
+        description: "Identifiant de la Zone D'Arrêt — clé étrangère vers dim_arrets_zdc"
+      - name: niveau_accessibilite
+        description: "Niveau d'accessibilité PMR de l'arrêt"
+      - name: note_accessibilite
+        description: "Note chiffrée d'accessibilité PMR"
+
+  - name: fact_meteo
+    description: "Fact — Données météorologiques quotidiennes pour Paris sur 2023-2024. Utilisée pour croiser les conditions météo avec les performances du réseau de transport."
+    columns:
+      - name: id_meteo
+        description: "Identifiant unique de la mesure météo — généré par DBT"
+        tests:
+          - not_null
+          - unique
+      - name: date
+        description: "Date de la mesure — clé étrangère vers dim_date"
+        tests:
+          - not_null
+          - unique
+      - name: temp_moy
+        description: "Température moyenne journalière en degrés Celsius"
+        tests:
+          - not_null
+      - name: temp_max
+        description: "Température maximale journalière en degrés Celsius"
+        tests:
+          - not_null
+      - name: temp_min
+        description: "Température minimale journalière en degrés Celsius"
+        tests:
+          - not_null
+      - name: precipitation_sum
+        description: "Cumul total de précipitations en mm"
+      - name: pluie_somme
+        description: "Cumul de pluie en mm"
+      - name: neige_somme
+        description: "Cumul de neige en mm"
+      - name: pluie_heure
+        description: "Durée de précipitation en heures"
+      - name: vent_vitesse
+        description: "Vitesse maximale du vent en km/h"
+      - name: vent_rafale
+        description: "Vitesse maximale des rafales en km/h"
+      - name: vent_direction
+        description: "Direction dominante du vent en degrés"
+      - name: code_meteo
+        description: "Code météorologique WMO"
+      - name: temp_categorie
+        description: "Catégorie de température (froid, frais, doux, chaud)"
+      - name: pluie_categorie
+        description: "Catégorie de précipitation (sec, léger, modéré, fort)"
+      - name: vent_categorie
+        description: "Catégorie de vent (calme, brise, fort, tempête)"
+      - name: is_rainy
+        description: "Indicateur : jour pluvieux"
+      - name: is_snowy
+        description: "Indicateur : jour neigeux"
+      - name: is_windy
+        description: "Indicateur : jour venteux"
+      - name: is_extrem
+        description: "Indicateur : conditions météo extrêmes"
+      - name: description_meteo
+        description: "Description textuelle des conditions météorologiques"
+
+  - name: fact_nb_fer
+    description: "Fact — Nombre de validations quotidiennes sur le réseau ferré IDFM (RER, Metro, Transilien) par arrêt et par catégorie de titre. Données couvrant 2023 et 2024."
+    columns:
+      - name: date
+        description: "Date des validations — clé étrangère vers dim_date"
+        tests:
+          - not_null
+      - name: id_arret
+        description: "Identifiant de l'arrêt — clé étrangère vers dim_arrets_zdc"
+        tests:
+          - not_null
+      - name: id_titre
+        description: "Identifiant de la catégorie de titre — clé étrangère vers dim_categorie_titres"
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_categorie_titres')
+                field: id_titre
+      - name: validations_nb
+        description: "Nombre de validations enregistrées"
+        tests:
+          - not_null
+
+  - name: fact_nb_surface
+    description: "Fact — Nombre de validations quotidiennes sur le réseau surface IDFM (Bus, Tramway) par ligne et par catégorie de titre. Données couvrant 2023 et 2024."
+    columns:
+      - name: id_ligne
+        description: "Identifiant STIF de la ligne"
+      - name: private_code
+        description: "Code privé technique de la ligne"
+      - name: date
+        description: "Date des validations — clé étrangère vers dim_date"
+        tests:
+          - not_null
+      - name: id_titre
+        description: "Identifiant de la catégorie de titre — clé étrangère vers dim_categorie_titres"
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_categorie_titres')
+                field: id_titre
+      - name: validations_nb
+        description: "Nombre de validations enregistrées"
+        tests:
+          - not_null
+
+  - name: fact_profil_fer
+    description: "Fact — Profil horaire de fréquentation du réseau ferré IDFM. Contient la répartition en pourcentage des validations par heure, par catégorie de jour et par arrêt. Permet d'analyser les pics de fréquentation."
+    columns:
+      - name: id_arret
+        description: "Identifiant de l'arrêt — clé étrangère vers dim_arrets_zdc"
+        tests:
+          - not_null
+      - name: categorie_jour
+        description: "Catégorie tarifaire du jour (DIJFP, JOHV, JOVS, SAHV, SAVS)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['DIJFP', 'JOHV', 'JOVS', 'SAHV', 'SAVS']
+      - name: heure
+        description: "Heure de début de la tranche horaire"
+        tests:
+          - not_null
+      - name: periode
+        description: "Période de référence des données (semestre ou trimestre)"
+      - name: validations_pct
+        description: "Pourcentage de validations sur cette tranche horaire par rapport à la journée totale"
+        tests:
+          - not_null
+
+  - name: fact_profil_surface
+    description: "Fact — Profil horaire de fréquentation du réseau surface IDFM. Contient la répartition en pourcentage des validations par heure, par catégorie de jour et par ligne. Permet d'analyser les pics de fréquentation des bus et tramways."
+    columns:
+      - name: id_ligne
+        description: "Identifiant de la ligne"
+      - name: private_code
+        description: "Code privé technique de la ligne"
+      - name: categorie_jour
+        description: "Catégorie tarifaire du jour (DIJFP, JOHV, JOVS, SAHV, SAVS)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['DIJFP', 'JOHV', 'JOVS', 'SAHV', 'SAVS']
+      - name: heure
+        description: "Heure de début de la tranche horaire"
+        tests:
+          - not_null
+      - name: periode
+        description: "Période de référence des données"
+      - name: validations_pct
+        description: "Pourcentage de validations sur cette tranche horaire"
+        tests:
+          - not_null
+
+  - name: fact_trafic_heure
+    description: "Fact — Données horaires de performance du réseau de transport IDFM. Contient les fréquences théoriques et réelles, les retards moyens et les incidents par ligne et par heure. Table principale pour les analyses de qualité de service."
+    columns:
+      - name: id_trafic
+        description: "Identifiant unique de la mesure — généré par DBT"
+        tests:
+          - not_null
+          - unique
+      - name: date
+        description: "Date de la mesure — clé étrangère vers dim_date"
+        tests:
+          - not_null
+      - name: heure
+        description: "Heure de la mesure"
+        tests:
+          - not_null
+      - name: tranche_horaire
+        description: "Tranche horaire regroupée (ex: matin, midi, soir)"
+      - name: id_ligne
+        description: "Identifiant de la ligne"
+        tests:
+          - not_null
+      - name: freq_theo
+        description: "Fréquence théorique de passage par heure selon le plan de transport"
+        tests:
+          - not_null
+      - name: freq_reel
+        description: "Fréquence réelle de passage par heure observée"
+        tests:
+          - not_null
+      - name: taux_service_pct
+        description: "Taux de service réalisé en pourcentage (freq_reel / freq_theo × 100)"
+        tests:
+          - not_null
+      - name: retard_moyen_minute
+        description: "Retard moyen observé en minutes"
+        tests:
+          - not_null
+      - name: facteur_retard
+        description: "Facteur explicatif principal du retard (météo, incident, trafic...)"
+      - name: incident_detecte
+        description: "Indique si un incident a été détecté sur la ligne durant cette heure"
+      - name: incident_type
+        description: "Type d'incident détecté (panne, accident, manifestation...)"

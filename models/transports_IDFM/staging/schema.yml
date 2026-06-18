@@ -1,0 +1,670 @@
+version: 2
+
+models:
+
+  - name: stg_accessibilite_en_gare
+    description: "Staging — Données d'accessibilité des gares et arrêts IDFM. Contient le niveau et la note d'accessibilité de chaque point d'arrêt."
+    columns:
+      - name: id_stop_idfm
+        description: "Identifiant unique de l'arrêt dans le référentiel IDFM"
+        tests:
+          - not_null
+      - name: libelle_arret
+        description: "Nom de l'arrêt"
+      - name: niveau_accessibilite
+        description: "Niveau d'accessibilité de l'arrêt (ex: accessible, partiellement accessible)"
+        tests:
+          - not_null
+      - name: note_accessibilite
+        description: "Note chiffrée d'accessibilité de l'arrêt"
+      - name: latitude
+        description: "Coordonnée géographique latitude de l'arrêt"
+      - name: longitude
+        description: "Coordonnée géographique longitude de l'arrêt"
+
+  - name: stg_arrets_lignes
+    description: "Staging — Association entre les arrêts et les lignes de transport IDFM. Une ligne peut avoir plusieurs arrêts."
+    columns:
+      - name: id_ligne_idfm
+        description: "Identifiant officiel IDFM de la ligne (ex: C00084)"
+        tests:
+          - not_null
+      - name: id_stop_idfm
+        description: "Identifiant unique de l'arrêt dans le référentiel IDFM"
+        tests:
+          - not_null
+      - name: libelle_ligne_long
+        description: "Nom complet de la ligne"
+      - name: libelle_arret
+        description: "Nom de l'arrêt"
+      - name: longitude
+        description: "Coordonnée géographique longitude de l'arrêt"
+      - name: latitude
+        description: "Coordonnée géographique latitude de l'arrêt"
+      - name: libelle_transporteur
+        description: "Nom du transporteur exploitant la ligne"
+      - name: libelle_ligne_court
+        description: "Nom court de la ligne (ex: T4, 13, RER B)"
+      - name: reservation
+        description: "Indique si la ligne nécessite une réservation"
+      - name: type_transport
+        description: "Mode de transport (Bus, Metro, RapidTransit, Tramway, LocalTrain...)"
+      - name: ville
+        description: "Ville où se situe l'arrêt"
+      - name: code_postal
+        description: "Code postal de la ville de l'arrêt"
+
+  - name: stg_arrets_referentiel
+    description: "Staging — Référentiel officiel des arrêts IDFM avec leurs zones de correspondance."
+    columns:
+      - name: id_arret_idfm
+        description: "Identifiant officiel IDFM de l'arrêt"
+        tests:
+          - not_null
+      - name: id_zdc
+        description: "Identifiant de la Zone De Correspondance (ZDC) associée à l'arrêt"
+        tests:
+          - not_null
+      - name: libelle_arret
+        description: "Nom de l'arrêt"
+      - name: ville
+        description: "Ville où se situe l'arrêt"
+      - name: code_postal
+        description: "Code postal de la ville de l'arrêt"
+      - name: type_transport
+        description: "Mode de transport principal de l'arrêt"
+
+  - name: stg_climatisation
+    description: "Staging — Données de climatisation des lignes de bus IDFM. Source : fichier SDAP lignes bus inscrites."
+    columns:
+      - name: nom_ligne
+        description: "Nom commercial de la ligne de bus"
+      - name: id_ligne_idfm
+        description: "Identifiant officiel IDFM de la ligne"
+        tests:
+          - not_null
+      - name: climatisation
+        description: "Statut de climatisation du véhicule (airConditioning, noConditioning, other, unknown)"
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['airConditioning', 'noConditioning', 'other', 'unknown']
+
+  - name: stg_horaires_2023
+    description: "Staging — Données horaires et de performance du réseau de transport IDFM pour l'année 2023. Contient les fréquences théoriques et réelles, les retards et les incidents."
+    columns:
+      - name: date
+        description: "Date de la mesure"
+        tests:
+          - not_null
+      - name: annee
+        description: "Année de la mesure"
+      - name: mois
+        description: "Mois de la mesure"
+      - name: jour
+        description: "Jour du mois de la mesure"
+      - name: jour_semaine
+        description: "Jour de la semaine de la mesure"
+      - name: heure
+        description: "Heure de la mesure"
+      - name: tranche_horaire
+        description: "Tranche horaire regroupée (ex: matin, midi, soir)"
+      - name: id_ligne_idfm
+        description: "Identifiant officiel IDFM de la ligne"
+        tests:
+          - not_null
+      - name: ligne_nom
+        description: "Nom de la ligne"
+      - name: type_transport
+        description: "Mode de transport (Bus, Metro, RapidTransit...)"
+      - name: frequence_theorique_par_heure
+        description: "Nombre de passages théoriques par heure selon le plan de transport"
+      - name: frequence_reelle_par_heure
+        description: "Nombre de passages réels par heure observés"
+      - name: taux_service_pct
+        description: "Taux de service réalisé en pourcentage (fréquence réelle / théorique)"
+      - name: retard_moyen_minutes
+        description: "Retard moyen observé en minutes"
+      - name: facteur_retard
+        description: "Facteur explicatif du retard (météo, incident...)"
+      - name: incident_detecte
+        description: "Indique si un incident a été détecté sur la ligne"
+      - name: incident_type
+        description: "Type d'incident détecté"
+      - name: temperature
+        description: "Température extérieure au moment de la mesure"
+      - name: precipitation
+        description: "Niveau de précipitation au moment de la mesure"
+      - name: neige
+        description: "Présence de neige au moment de la mesure"
+      - name: vent
+        description: "Vitesse du vent au moment de la mesure"
+      - name: meteo_defavorable
+        description: "Indique si la météo était défavorable à l'exploitation"
+
+  - name: stg_horaires_2024
+    description: "Staging — Données horaires et de performance du réseau de transport IDFM pour l'année 2024. Même structure que stg_horaires_2023."
+    columns:
+      - name: date
+        description: "Date de la mesure"
+        tests:
+          - not_null
+      - name: annee
+        description: "Année de la mesure"
+      - name: mois
+        description: "Mois de la mesure"
+      - name: jour
+        description: "Jour du mois de la mesure"
+      - name: jour_semaine
+        description: "Jour de la semaine de la mesure"
+      - name: heure
+        description: "Heure de la mesure"
+      - name: tranche_horaire
+        description: "Tranche horaire regroupée"
+      - name: id_ligne_idfm
+        description: "Identifiant officiel IDFM de la ligne"
+        tests:
+          - not_null
+      - name: ligne_nom
+        description: "Nom de la ligne"
+      - name: type_transport
+        description: "Mode de transport"
+      - name: frequence_theorique_par_heure
+        description: "Nombre de passages théoriques par heure"
+      - name: frequence_reelle_par_heure
+        description: "Nombre de passages réels par heure"
+      - name: taux_service_pct
+        description: "Taux de service réalisé en pourcentage"
+      - name: retard_moyen_minutes
+        description: "Retard moyen observé en minutes"
+      - name: facteur_retard
+        description: "Facteur explicatif du retard"
+      - name: incident_detecte
+        description: "Indique si un incident a été détecté"
+      - name: incident_type
+        description: "Type d'incident détecté"
+      - name: temperature
+        description: "Température extérieure"
+      - name: precipitation
+        description: "Niveau de précipitation"
+      - name: neige
+        description: "Présence de neige"
+      - name: vent
+        description: "Vitesse du vent"
+      - name: meteo_defavorable
+        description: "Indique si la météo était défavorable"
+
+  - name: stg_indicateurs_de_perception_qs
+    description: "Staging — Indicateurs de qualité de service perçue par les voyageurs IDFM. Contient les résultats par ligne et par DSP (Délégation de Service Public)."
+    columns:
+      - name: transporteur_name
+        description: "Nom du transporteur exploitant la ligne"
+      - name: dsp
+        description: "Code de la Délégation de Service Public"
+      - name: type_transport
+        description: "Mode de transport de la ligne"
+      - name: libelle_groupe_de_lignes
+        description: "Nom du groupe de lignes auquel appartient la ligne"
+      - name: id_ligne_idfm
+        description: "Identifiant officiel IDFM de la ligne (NULL si indicateur agrégé au niveau DSP)"
+      - name: libelle_ligne
+        description: "Nom de la ligne"
+      - name: annee
+        description: "Année de mesure de l'indicateur"
+      - name: resultat
+        description: "Score de satisfaction des voyageurs (sur 100)"
+        tests:
+          - not_null
+
+  - name: stg_lignes_referentiel
+    description: "Staging — Référentiel officiel des lignes IDFM avec leurs identifiants techniques et leurs périodes de validité."
+    columns:
+      - name: id_ligne_idfm
+        description: "Identifiant officiel IDFM de la ligne"
+        tests:
+          - not_null
+          - unique
+      - name: libelle_ligne
+        description: "Nom officiel de la ligne"
+      - name: privatecode
+        description: "Code privé technique de la ligne"
+      - name: id_groupoflines
+        description: "Identifiant du groupe de lignes"
+      - name: valid_fromdate
+        description: "Date de début de validité de la ligne"
+        tests:
+          - not_null
+      - name: valid_todate
+        description: "Date de fin de validité de la ligne"
+        tests:
+          - not_null
+
+  - name: stg_liste_transporteurs
+    description: "Staging — Référentiel des opérateurs de transport du réseau IDFM avec leurs coordonnées."
+    columns:
+      - name: libelle_transporteur
+        description: "Nom commercial du transporteur"
+      - name: transporteur_ref
+        description: "Identifiant de référence unique du transporteur"
+        tests:
+          - not_null
+          - unique
+      - name: housenumber
+        description: "Numéro de rue du siège social"
+      - name: street
+        description: "Rue du siège social"
+      - name: addressline1
+        description: "Complément d'adresse"
+      - name: town
+        description: "Ville du siège social"
+      - name: postcode
+        description: "Code postal du siège social"
+      - name: postcodeextension
+        description: "Extension du code postal"
+      - name: phone
+        description: "Numéro de téléphone"
+      - name: url
+        description: "Site web du transporteur"
+      - name: furtherdetails
+        description: "Informations complémentaires"
+      - name: contactperson
+        description: "Personne de contact"
+      - name: logo
+        description: "URL du logo du transporteur"
+      - name: email
+        description: "Adresse email de contact"
+
+  - name: stg_meteo_paris_2023_2024
+    description: "Staging — Données météorologiques quotidiennes pour Paris sur la période 2023-2024. Utilisées pour analyser l'impact de la météo sur les performances du réseau."
+    columns:
+      - name: date
+        description: "Date de la mesure météorologique"
+        tests:
+          - not_null
+          - unique
+      - name: temperature_2m_mean
+        description: "Température moyenne à 2m en degrés Celsius"
+      - name: temperature_2m_max
+        description: "Température maximale à 2m en degrés Celsius"
+      - name: temperature_2m_min
+        description: "Température minimale à 2m en degrés Celsius"
+      - name: precipitation_sum
+        description: "Cumul total de précipitations en mm"
+      - name: somme_pluie
+        description: "Cumul de pluie en mm"
+      - name: somme_neige
+        description: "Cumul de neige en mm"
+      - name: precipitation_par_heure
+        description: "Durée de précipitation en heures"
+      - name: windspeed_10m_max
+        description: "Vitesse maximale du vent à 10m en km/h"
+      - name: windgusts_10m_max
+        description: "Vitesse maximale des rafales à 10m en km/h"
+      - name: winddirection_10m_dominant
+        description: "Direction dominante du vent à 10m en degrés"
+      - name: weathercode
+        description: "Code météorologique WMO"
+      - name: temp_categorie
+        description: "Catégorie de température (froid, frais, doux, chaud)"
+      - name: pluie_categorie
+        description: "Catégorie de pluie (sec, léger, modéré, fort)"
+      - name: vent_categorie
+        description: "Catégorie de vent (calme, brise, fort, tempête)"
+      - name: pluie
+        description: "Indicateur booléen : présence de pluie"
+      - name: neige
+        description: "Indicateur booléen : présence de neige"
+      - name: vent
+        description: "Indicateur booléen : vent fort"
+      - name: extreme
+        description: "Indicateur booléen : conditions météo extrêmes"
+      - name: description_temp
+        description: "Description textuelle des conditions météorologiques"
+
+  - name: stg_nb_fer_2023_s1
+    description: "Staging — Nombre de validations sur le réseau ferré IDFM pour le semestre 1 de 2023."
+    columns:
+      - name: date
+        description: "Date de la mesure"
+        tests:
+          - not_null
+      - name: id_transporteur_stif
+        description: "Identifiant STIF du transporteur"
+        tests:
+          - not_null
+      - name: id_reseau_stif
+        description: "Identifiant STIF du réseau"
+      - name: libelle_arret
+        description: "Nom de l'arrêt"
+      - name: id_zone_arret
+        description: "Identifiant de la zone d'arrêt"
+      - name: categorie_titre
+        description: "Catégorie du titre de transport utilisé"
+      - name: validations_nb
+        description: "Nombre de validations enregistrées"
+        tests:
+          - not_null
+
+  - name: stg_nb_fer_2023_s2
+    description: "Staging — Nombre de validations sur le réseau ferré IDFM pour le semestre 2 de 2023."
+    columns:
+      - name: date
+        description: "Date de la mesure"
+        tests:
+          - not_null
+      - name: id_transporteur_stif
+        description: "Identifiant STIF du transporteur"
+        tests:
+          - not_null
+      - name: validations_nb
+        description: "Nombre de validations enregistrées"
+        tests:
+          - not_null
+
+  - name: stg_nb_fer_2024_s1
+    description: "Staging — Nombre de validations sur le réseau ferré IDFM pour le semestre 1 de 2024."
+    columns:
+      - name: date
+        description: "Date de la mesure"
+        tests:
+          - not_null
+      - name: id_transporteur_stif
+        description: "Identifiant STIF du transporteur"
+        tests:
+          - not_null
+      - name: validations_nb
+        description: "Nombre de validations enregistrées"
+        tests:
+          - not_null
+
+  - name: stg_nb_fer_2024_t3
+    description: "Staging — Nombre de validations sur le réseau ferré IDFM pour le trimestre 3 de 2024."
+    columns:
+      - name: date
+        description: "Date de la mesure"
+        tests:
+          - not_null
+      - name: id_transporteur_stif
+        description: "Identifiant STIF du transporteur"
+        tests:
+          - not_null
+      - name: validations_nb
+        description: "Nombre de validations enregistrées"
+        tests:
+          - not_null
+
+  - name: stg_nb_surface_2023_t1
+    description: "Staging — Nombre de validations sur le réseau surface IDFM pour le trimestre 1 de 2023."
+    columns:
+      - name: date
+        description: "Date de la mesure"
+        tests:
+          - not_null
+      - name: id_ligne_stif
+        description: "Identifiant STIF de la ligne"
+        tests:
+          - not_null
+      - name: categorie_titre
+        description: "Catégorie du titre de transport utilisé"
+      - name: validations_nb
+        description: "Nombre de validations enregistrées"
+        tests:
+          - not_null
+
+  - name: stg_nb_surface_2023_t2
+    description: "Staging — Nombre de validations sur le réseau surface IDFM pour le trimestre 2 de 2023."
+    columns:
+      - name: date
+        description: "Date de la mesure"
+        tests:
+          - not_null
+      - name: id_ligne_stif
+        description: "Identifiant STIF de la ligne"
+        tests:
+          - not_null
+      - name: validations_nb
+        description: "Nombre de validations enregistrées"
+        tests:
+          - not_null
+
+  - name: stg_nb_surface_2023_t3
+    description: "Staging — Nombre de validations sur le réseau surface IDFM pour le trimestre 3 de 2023."
+    columns:
+      - name: date
+        description: "Date de la mesure"
+        tests:
+          - not_null
+      - name: id_ligne_stif
+        description: "Identifiant STIF de la ligne"
+        tests:
+          - not_null
+      - name: validations_nb
+        description: "Nombre de validations enregistrées"
+        tests:
+          - not_null
+
+  - name: stg_nb_surface_2023_t4
+    description: "Staging — Nombre de validations sur le réseau surface IDFM pour le trimestre 4 de 2023."
+    columns:
+      - name: date
+        description: "Date de la mesure"
+        tests:
+          - not_null
+      - name: id_ligne_stif
+        description: "Identifiant STIF de la ligne"
+        tests:
+          - not_null
+      - name: validations_nb
+        description: "Nombre de validations enregistrées"
+        tests:
+          - not_null
+
+  - name: stg_nb_surface_2024_t1
+    description: "Staging — Nombre de validations sur le réseau surface IDFM pour le trimestre 1 de 2024."
+    columns:
+      - name: date
+        description: "Date de la mesure"
+        tests:
+          - not_null
+      - name: id_ligne_stif
+        description: "Identifiant STIF de la ligne"
+        tests:
+          - not_null
+      - name: validations_nb
+        description: "Nombre de validations enregistrées"
+        tests:
+          - not_null
+
+  - name: stg_nb_surface_2024_t2
+    description: "Staging — Nombre de validations sur le réseau surface IDFM pour le trimestre 2 de 2024."
+    columns:
+      - name: date
+        description: "Date de la mesure"
+        tests:
+          - not_null
+      - name: id_ligne_stif
+        description: "Identifiant STIF de la ligne"
+        tests:
+          - not_null
+      - name: validations_nb
+        description: "Nombre de validations enregistrées"
+        tests:
+          - not_null
+
+  - name: stg_nb_surface_2024_t3
+    description: "Staging — Nombre de validations sur le réseau surface IDFM pour le trimestre 3 de 2024."
+    columns:
+      - name: date
+        description: "Date de la mesure"
+        tests:
+          - not_null
+      - name: id_ligne_stif
+        description: "Identifiant STIF de la ligne"
+        tests:
+          - not_null
+      - name: validations_nb
+        description: "Nombre de validations enregistrées"
+        tests:
+          - not_null
+
+  - name: stg_profil_fer_2023_s1
+    description: "Staging — Profil horaire de fréquentation du réseau ferré IDFM pour le semestre 1 de 2023. Contient la répartition des validations par heure et par catégorie de jour."
+    columns:
+      - name: id_transporteur_stif
+        description: "Identifiant STIF du transporteur"
+        tests:
+          - not_null
+      - name: id_reseau_stif
+        description: "Identifiant STIF du réseau"
+      - name: id_arret_stif
+        description: "Identifiant STIF de l'arrêt"
+      - name: libelle_arret
+        description: "Nom de l'arrêt"
+      - name: id_zone_arret
+        description: "Identifiant de la zone d'arrêt"
+      - name: categorie_jour
+        description: "Catégorie du jour (DIJFP, JOHV, JOVS, SAHV, SAVS)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['DIJFP', 'JOHV', 'JOVS', 'SAHV', 'SAVS']
+      - name: heure
+        description: "Heure de début de la tranche horaire"
+      - name: validations_pct
+        description: "Pourcentage de validations sur cette tranche par rapport à la journée"
+        tests:
+          - not_null
+
+  - name: stg_profil_fer_2023_s2
+    description: "Staging — Profil horaire de fréquentation du réseau ferré IDFM pour le semestre 2 de 2023."
+    columns:
+      - name: id_transporteur_stif
+        description: "Identifiant STIF du transporteur"
+        tests:
+          - not_null
+      - name: categorie_jour
+        description: "Catégorie du jour (DIJFP, JOHV, JOVS, SAHV, SAVS)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['DIJFP', 'JOHV', 'JOVS', 'SAHV', 'SAVS']
+      - name: validations_pct
+        description: "Pourcentage de validations sur cette tranche"
+        tests:
+          - not_null
+
+  - name: stg_profil_fer_2024_s1
+    description: "Staging — Profil horaire de fréquentation du réseau ferré IDFM pour le semestre 1 de 2024."
+    columns:
+      - name: id_transporteur_stif
+        description: "Identifiant STIF du transporteur"
+        tests:
+          - not_null
+      - name: categorie_jour
+        description: "Catégorie du jour (DIJFP, JOHV, JOVS, SAHV, SAVS)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['DIJFP', 'JOHV', 'JOVS', 'SAHV', 'SAVS']
+      - name: validations_pct
+        description: "Pourcentage de validations sur cette tranche"
+        tests:
+          - not_null
+
+  - name: stg_profil_fer_2024_t3
+    description: "Staging — Profil horaire de fréquentation du réseau ferré IDFM pour le trimestre 3 de 2024."
+    columns:
+      - name: id_transporteur_stif
+        description: "Identifiant STIF du transporteur"
+        tests:
+          - not_null
+      - name: categorie_jour
+        description: "Catégorie du jour (DIJFP, JOHV, JOVS, SAHV, SAVS)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['DIJFP', 'JOHV', 'JOVS', 'SAHV', 'SAVS']
+      - name: validations_pct
+        description: "Pourcentage de validations sur cette tranche"
+        tests:
+          - not_null
+
+  - name: stg_profil_surface_2023_s1
+    description: "Staging — Profil horaire de fréquentation du réseau surface IDFM pour le semestre 1 de 2023."
+    columns:
+      - name: id_ligne_stif
+        description: "Identifiant STIF de la ligne"
+        tests:
+          - not_null
+      - name: categorie_jour
+        description: "Catégorie du jour (DIJFP, JOHV, JOVS, SAHV, SAVS)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['DIJFP', 'JOHV', 'JOVS', 'SAHV', 'SAVS']
+      - name: validations_pct
+        description: "Pourcentage de validations sur cette tranche"
+        tests:
+          - not_null
+
+  - name: stg_profil_surface_2023_s2
+    description: "Staging — Profil horaire de fréquentation du réseau surface IDFM pour le semestre 2 de 2023."
+    columns:
+      - name: id_ligne_stif
+        description: "Identifiant STIF de la ligne"
+        tests:
+          - not_null
+      - name: categorie_jour
+        description: "Catégorie du jour (DIJFP, JOHV, JOVS, SAHV, SAVS)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['DIJFP', 'JOHV', 'JOVS', 'SAHV', 'SAVS']
+      - name: validations_pct
+        description: "Pourcentage de validations sur cette tranche"
+        tests:
+          - not_null
+
+  - name: stg_profil_surface_2024_s1
+    description: "Staging — Profil horaire de fréquentation du réseau surface IDFM pour le semestre 1 de 2024."
+    columns:
+      - name: id_ligne_stif
+        description: "Identifiant STIF de la ligne"
+        tests:
+          - not_null
+      - name: categorie_jour
+        description: "Catégorie du jour (DIJFP, JOHV, JOVS, SAHV, SAVS)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['DIJFP', 'JOHV', 'JOVS', 'SAHV', 'SAVS']
+      - name: validations_pct
+        description: "Pourcentage de validations sur cette tranche"
+        tests:
+          - not_null
+
+  - name: stg_profil_surface_2024_t3
+    description: "Staging — Profil horaire de fréquentation du réseau surface IDFM pour le trimestre 3 de 2024."
+    columns:
+      - name: id_ligne_stif
+        description: "Identifiant STIF de la ligne"
+        tests:
+          - not_null
+      - name: categorie_jour
+        description: "Catégorie du jour (DIJFP, JOHV, JOVS, SAHV, SAVS)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['DIJFP', 'JOHV', 'JOVS', 'SAHV', 'SAVS']
+      - name: validations_pct
+        description: "Pourcentage de validations sur cette tranche"
+        tests:
+          - not_null
