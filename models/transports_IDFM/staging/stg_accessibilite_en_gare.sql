@@ -29,3 +29,18 @@ clean_data AS (
 
 SELECT *
 FROM clean_data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
